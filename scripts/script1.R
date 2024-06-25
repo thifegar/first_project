@@ -12,6 +12,9 @@ library(filesstrings)
 getwd()
 file.move("/home/onyxia/work/first_project/script/script.R", "/home/onyxia/work/first_project/scripts")
 file.move("/home/onyxia/work/first_project/get_data.R", "/home/onyxia/work/first_project/scripts")
+file.move("/home/onyxia/work/first_project/individu_reg.csv", "/home/onyxia/work/first_project/data")
+file.move("/home/onyxia/work/first_project/maVariable1.csv", "/home/onyxia/work/first_project/data")
+file.move("/home/onyxia/work/first_project/maVariable2.csv", "/home/onyxia/work/first_project/data")
 
 # Essai lintr
 library(lintr)
