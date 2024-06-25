@@ -6,4 +6,10 @@ df <- aws.s3::s3read_using(
   opts = list("region" = "")
   )
 
-readr::write_csv2(df, "individu_reg.csv")
+readr::write_csv2(df, "data/individu_reg.csv")
+file.remove("data/individu_reg.csv")
+
+arrow::write_parquet(df, "data/individu_reg.parquet")
+rm(df)
+gc()
+df <- arrow::read_parquet("data/individu_reg.parquet")

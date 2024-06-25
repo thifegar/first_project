@@ -1,27 +1,25 @@
 rm(list = ls())
+source("functions.R")
 
 if (!require("ggplot2")) install.packages("ggplot2")
 if (!require("stringr")) install.packages("stringr")
-if (!require("dplyr")) install.packages("dplyr")
 if (!require("tidyverse")) install.packages("tidyverse")
 
-
 library(tidyverse)
+library(forcats)
 
 # j'importe les données avec read_csv2 parce que c'est un csv avec des ; et que read_csv attend comme separateur des ,
-df <- readr::read_csv2("individu_reg.csv",
-                       col_select = c("region", "aemm", "aged", "anai", "catl", "cs1", "cs2", "cs3", "couple", "na38", "naf08", "pnai12", "sexe", "surf", "tp", "trans", "ur"))
+df <- arrow::read_parquet("data/individu_reg.parquet")
+
+df <- df %>% select(region, aemm ,  aged ,  anai ,  catl ,  cs1 ,  cs2 ,  cs3 ,  couple ,  na38 ,  naf08 ,  pnai12 ,  sexe ,  surf ,  tp ,  trans ,  ur ))
 
 df <- df %>%
   mutate(aged = as.numeric(aged))
+df_plot <- df %>%
+  group_by(aged) %>% 
+  summarise(n())
 
-summarise(group_by(df, aged), n())
-
-decennie_a_partir_annee <-  function(ANNEE) {
-  return(ANNEE - ANNEE %% 10)
-  }
-
-ggplot(df) + geom_histogram(aes(x = 5*floor(as.numeric(aged)/5)), stat = "count")
+ggplot(df_plot, aes(x = 5*floor(as.numeric(aged)/5))) + geom_histogram(stat="bin")
 
 # stats trans par statut
 df3 <-  df %>% 
@@ -41,31 +39,17 @@ p <- df %>%
 
 ggsave("p.png", p)
 
-library(forcats)
-df$sexe <- df$sexe %>%
-  as.character() %>%
-  fct_recode(Homme = "1", Femme = "2")
+
+df <- fct_recode_sexe(df)
+
 
 #fonction de stat agregee
-fonction_de_stat_agregee <- function(a,b="moyenne",...){
-  if (b=="moyenne"){
-    x=mean(a, na.rm = TRUE,...)
-  } 
-  else if (b=="ecart-type" || b == "sd"){
-    x = sd(a, na.rm = TRUE, ...)
-  } 
-  else if (b=="variance"){
-    x = var(a, na.rm = TRUE, ...)
-  }
-  return(x)
-}
+calcule_une_statistique(rnorm(10))
+calcule_une_statistique(rnorm(10), "ecart-type")
+calcule_une_statistique(rnorm(10), "variance")
 
-fonction_de_stat_agregee(rnorm(10))
-fonction_de_stat_agregee(rnorm(10), "ecart-type")
-fonction_de_stat_agregee(rnorm(10), "variance")
-
-fonction_de_stat_agregee(df %>% filter(sexe == "Homme") %>% pull(aged))
-fonction_de_stat_agregee(df %>% filter(sexe == "Femme") %>% pull(aged))
+calcule_une_statistique(df %>% filter(sexe == "Homme") %>% pull(aged))
+calcule_une_statistique(df %>% filter(sexe == "Femme") %>% pull(aged))
 
 api_token <- "trotskitueleski$1917"
 
@@ -77,11 +61,13 @@ df3 <- df %>%
 df3[,1] <- factor(df3$surf, ordered = T)
 df3[,"cs1"] <- factor(df3$cs1)
 df3 %>% 
-  filter(couple == "2" && aged>40 && aged<60)
-res_polr <- MASS::polr(surf ~ cs1 + factor(ur), df3)
+  filter(couple == "2" 
+         & aged>40 
+         & aged<60)
+# res_polr <- MASS::polr(surf ~ cs1 + factor(ur), df3)
+# res_polr
+# summary(res_polr, digits = 3)
 
-res_polr
-summary(res_polr, digits = 3)
 
 
 
