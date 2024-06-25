@@ -17,21 +17,25 @@ df <- df %>%
 
 summarise(group_by(df, aged), n())
 
-decennie_a_partir_annee <-  function(ANNEE){
+decennie_a_partir_annee <-  function(ANNEE) {
   return(ANNEE - ANNEE %% 10)
   }
 
 ggplot(df) + geom_histogram(aes(x = 5*floor(as.numeric(aged)/5)), stat = "count")
 
 # stats trans par statut
-df3 = df %>% group_by(couple, trans) %>% summarise(x = n()) %>% group_by(couple) %>% mutate(y = 100*x/sum(x))
+df3 <-  df %>% 
+  group_by(couple, trans) %>% 
+  summarise(x = n()) %>% 
+  group_by(couple) %>% 
+  mutate(y = 100*x/sum(x))
 
 # part d'homme dans chaque cohort
 p <- df %>% 
   group_by(aged, sexe) %>% 
   summarise(SH_sexe = n()) %>% 
   group_by(aged) %>% 
-  mutate(SH_sexe = SH_sexe/sum(SH_sexe)) %>% 
+  mutate(SH_sexe = SH_sexe / sum(SH_sexe)) %>% 
   filter(sexe==1) %>%
   ggplot() + geom_bar(aes(x = aged, y = SH_sexe), stat="identity") + geom_point(aes(x = aged, y = SH_sexe), stat="identity", color = "red") + coord_cartesian(c(0,100))
 
@@ -45,13 +49,13 @@ df$sexe <- df$sexe %>%
 #fonction de stat agregee
 fonction_de_stat_agregee <- function(a,b="moyenne",...){
   if (b=="moyenne"){
-    x=mean(a, na.rm = T,...)
+    x=mean(a, na.rm = TRUE,...)
   } 
   else if (b=="ecart-type" || b == "sd"){
-    x = sd(a, na.rm = T, ...)
+    x = sd(a, na.rm = TRUE, ...)
   } 
   else if (b=="variance"){
-    x = var(a, na.rm = T, ...)
+    x = var(a, na.rm = TRUE, ...)
   }
   return(x)
 }
@@ -67,7 +71,7 @@ api_token <- "trotskitueleski$1917"
 
 # modelisation
 df3 <- df %>%
-  select(surf,cs1,ur,couple,aged)%>%
+  select(surf, cs1, ur, couple, aged)%>%
   filter(surf!="Z")
 
 df3[,1] <- factor(df3$surf, ordered = T)
