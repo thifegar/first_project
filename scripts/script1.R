@@ -6,3 +6,8 @@ write.csv(maVariable1,"/home/onyxia/work/first_project/maVariable1.csv")
 write.csv(maVariable2,"/home/onyxia/work/first_project/maVariable2.csv")
 raw=c(1,2,4,4,4,4,78,987,9,0,0,1)
 write.csv(raw,"/home/onyxia/work/first_project/data/raw.csv", row.names = F)
+
+install.packages("filesstrings")
+library(filesstrings)
+getwd()
+file.move("/home/onyxia/work/first_project/script/script.R", "/home/onyxia/work/first_project/scripts")
